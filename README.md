@@ -26,7 +26,7 @@ Make sure that you have these dependencies and scripts in package.json
 ```json
 "devDependencies": {
 	"prettier": "^2.8.1",
-	"prettier-plugin-apex": "^1.12.0",
+	"prettier-plugin-apex": "Your selected version",
 	"wait-on": "^6.0.1"
 },
 "scripts": {
