@@ -14,6 +14,7 @@ docker run -it -p 2117:2117 ziemniakoss/prettier-apex-server:latest
 ```
 
 And after that whenever you run prettier, add these flags:
+
 ```
 --apex-standalone-parser built-in
 ```
@@ -21,6 +22,7 @@ And after that whenever you run prettier, add these flags:
 ## Bitbucket
 
 Make sure that you have these dependencies and scripts in package.json
+
 ```json
 "devDependencies": {
 	"prettier": "^2.8.1",
@@ -53,9 +55,10 @@ pipelines:
         script:
           - npm ci
           - npm run prettier-check
-
 ```
 
 ## Github
+
+TODO
 
 Just like in bitbucket, this can be implemented using [service containers](https://docs.github.com/en/actions/using-containerized-services/about-service-containers)
