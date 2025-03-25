@@ -4,6 +4,7 @@
 [![badge with image size](https://img.shields.io/docker/image-size/ziemniakoss/prettier-apex-server)](https://hub.docker.com/r/ziemniakoss/prettier-apex-server)
 
 Run apex parsing server in docker to speed up apex formatting with [prettier](https://github.com/dangmai/prettier-plugin-apex).
+Needed to be able to run prettier apex parser in server mode on CI machines, which reduces apex formatting file time from around 1 second to 20 ms.
 
 # How to use
 
@@ -14,6 +15,7 @@ docker run -it -p 2117:2117 ziemniakoss/prettier-apex-server:latest
 ```
 
 And after that whenever you run prettier, add these flags:
+
 ```
 --apex-standalone-parser built-in
 ```
@@ -21,10 +23,11 @@ And after that whenever you run prettier, add these flags:
 ## Bitbucket
 
 Make sure that you have these dependencies and scripts in package.json
+
 ```json
 "devDependencies": {
 	"prettier": "^2.8.1",
-	"prettier-plugin-apex": "^1.12.0",
+	"prettier-plugin-apex": "Your selected version",
 	"wait-on": "^6.0.1"
 },
 "scripts": {
@@ -53,7 +56,6 @@ pipelines:
         script:
           - npm ci
           - npm run prettier-check
-
 ```
 
 ## Github
