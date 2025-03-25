@@ -12,7 +12,7 @@ jobs:
       - name: "Checkout git"
         uses: actions/checkout@v4.2.2
       - name: "Build All images"
-        run: go run build_all_images_go
+        run: go run build_all_images.go
       - name: "Authorize to docker hub"
         run: echo ${{ secrets.DOCKER_TOKEN }} | docker login --username ziemniakoss --password-stdin
       - name: "Push tags to docker"
