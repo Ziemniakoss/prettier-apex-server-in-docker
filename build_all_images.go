@@ -3,25 +3,39 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 )
 
 const PRETTIER_PACKAGE_NAME = "prettier-plugin-apex"
 const FILE_WITH_BUILT_VERSIONS = "built_versions.txt"
-const START_VERSION = "1.0.0"
 const IMAGE_NAME = "ziemniakoss/prettier-apex-server"
 
 func main() {
 	fmt.Println(">>> Reading package versions")
 	avalibleVersions := getPrettierVersionNumbers()
-	alreadyBuiltVersions := getBuiltVersions()
+	buildResultsChannel := make(chan buildResult)
 	for _, version := range avalibleVersions {
-		if !shouldBeBuilt(version, alreadyBuiltVersions) {
-			continue
+		go buildImage(version, buildResultsChannel)
+	}
+
+	wasSuccess := true
+	for i := 0; i < len(avalibleVersions); i++ {
+		result := <-buildResultsChannel
+		message := "build successfully"
+		if !result.isSuccess {
+			wasSuccess = false
+			message = "build failed:"
+			println("Failed!")
+			println(result.output)
 		}
-		println(">>> Building image for package", version)
-		buildImage(version)
+		println("[", i+1, "|", len(avalibleVersions), "]", result.version, message)
+		wasSuccess = wasSuccess && result.isSuccess
+	}
+	if !wasSuccess {
+		fmt.Println("Failed")
+		os.Exit(1)
 	}
 }
 
@@ -40,43 +54,35 @@ func getPrettierVersionNumbers() []string {
 	var versions []string
 	err = json.Unmarshal([]byte(outAsStr), &versions)
 	if err != nil {
-		fmt.Println("=====\n" + outAsStr + "\n=====")
-		fmt.Println(err)
+		println("=====\n" + outAsStr + "\n=====")
+		println(err)
 		panic("Error while deconding json happened")
 	}
 	return versions
 }
 
-func getBuiltVersions() []string {
-	// TODO
-	return []string{}
-}
-
-func buildImage(pacakgeVersion string) {
+func buildImage(pacakgeVersion string, c chan buildResult) {
 	command := exec.Command(
 		"docker",
 		"build",
-		"--build-arg="+pacakgeVersion,
+		"--build-arg",
+		"PLUGIN_VERSION="+pacakgeVersion,
 		"--tag",
 		IMAGE_NAME+":"+pacakgeVersion,
+		"--no-cache",
 		".",
 	)
 	command.Wait()
 	out, err := command.CombinedOutput()
-	if err != nil {
-		println(out)
-		panic(err)
+	c <- buildResult{
+		version:   pacakgeVersion,
+		output:    string(out),
+		isSuccess: err == nil,
 	}
 }
 
-func shouldBeBuilt(version string, builtVersions []string) bool {
-	if START_VERSION > version {
-		return false
-	}
-	for _, v := range builtVersions {
-		if version == v {
-			return false
-		}
-	}
-	return true
+type buildResult struct {
+	version   string
+	output    string
+	isSuccess bool
 }
