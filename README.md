@@ -4,6 +4,7 @@
 [![badge with image size](https://img.shields.io/docker/image-size/ziemniakoss/prettier-apex-server)](https://hub.docker.com/r/ziemniakoss/prettier-apex-server)
 
 Run apex parsing server in docker to speed up apex formatting with [prettier](https://github.com/dangmai/prettier-plugin-apex).
+Needed to be able to run prettier apex parser in server mode on CI machines, which reduces apex formatting file time from around 1 second to 20 ms.
 
 # How to use
 
@@ -58,7 +59,5 @@ pipelines:
 ```
 
 ## Github
-
-TODO
 
 Just like in bitbucket, this can be implemented using [service containers](https://docs.github.com/en/actions/using-containerized-services/about-service-containers)
