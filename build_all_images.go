@@ -5,11 +5,9 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 const PRETTIER_PACKAGE_NAME = "prettier-plugin-apex"
-const FILE_WITH_BUILT_VERSIONS = "built_versions.txt"
 const IMAGE_NAME = "ziemniakoss/prettier-apex-server"
 
 func main() {
@@ -40,7 +38,7 @@ func main() {
 }
 
 func getPrettierVersionNumbers() []string {
-	command := exec.Command("npm", "view", PRETTIER_PACKAGE_NAME, "versions")
+	command := exec.Command("npm", "view", PRETTIER_PACKAGE_NAME, "versions", "--json")
 	command.Wait()
 	out, err := command.Output()
 	if err != nil {
@@ -49,7 +47,6 @@ func getPrettierVersionNumbers() []string {
 	}
 
 	outAsStr := string(out)
-	outAsStr = strings.ReplaceAll(outAsStr, "'", "\"") // Yeah, output is not parsable JSON
 
 	var versions []string
 	err = json.Unmarshal([]byte(outAsStr), &versions)
